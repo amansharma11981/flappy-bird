@@ -1,8 +1,8 @@
 
 //board
 let board;
-let boardWidth = 360;
-let boardHeight = 640;
+let boardWidth = screen.width;
+let boardHeight = screen.height;
 let context;
 
 //bird
@@ -85,6 +85,11 @@ window.onload = function() {
     setInterval(placePipes, 1500);
     this.setInterval(animateBird, 100);
     document.addEventListener("keydown", moveBird);  
+
+    //Mobile touch support
+    document.addEventListener("touchstart", handleTouchStart);
+    document.addEventListener("touchend", handleTouchEnd);
+    
     
         // Draw initial screen
     context.fillStyle = "white";
@@ -228,6 +233,21 @@ function moveBird(e) {
     }
         
 }
+function handleTouchStart(e) {
+    if (!gameStarted && !gameOver) {
+        startGame();
+    } else if (gameStarted && !gameOver) {
+        wingSound.play();
+        velocityY = -6;
+    } else if (gameOver) {
+        restartGame();
+    }
+}
+
+function handleTouchEnd(e) {
+    // Prevent default scrolling on mobile
+    e.preventDefault();
+}
 
 function detectCollision(a, b) {
     return a.x < b.x + b.width &&
@@ -235,4 +255,12 @@ function detectCollision(a, b) {
            a.y < b.y + b.height &&
            a.y + a.height > b.y;
 
+}
+function restartGame() {
+    bird.y = birdY;
+    pipearray = [];
+    score = 0;
+    velocityY = 0;
+    gameOver = false;
+    gameStarted = false;
 }
